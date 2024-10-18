@@ -1,0 +1,305 @@
+<!-- TECHNICAL DETAILS -->
+<section id="modeling">
+    <h2>How did we build Movie Gen Audio model?</h2>
+    
+    <h3>Why Is This Challenging?</h3>
+    <p>
+        Generating high-quality cinematic soundtracks for videos is a challenging task. 
+        See this <a href="https://www.youtube.com/watch?v=UO3N_PRIgX0" target="_blank" rel="noopener noreferrer">amazing video</a> 
+        which demonstrates how sound effects are added to movies. Defining "cinematic" is tricky—even movie traffic sounds polished! 
+        Almost all sounds in movies are heavily post-processed. 
+        Check out this <a href="https://www.youtube.com/watch?v=MwksKUJSZ9s" target="_blank" rel="noopener noreferrer">video</a> 
+        that explains the thought process and complexity behind cinematic sound design.
+    </p>
+
+    <p>
+        The relationship between audio and visual components is complex. Some
+        sound effects, like footsteps, correlate with the low-level motion of
+        objects in a scene, while others, like canned laughter in sitcoms,
+        relate to higher-level semantics, such as when something funny happens.
+        Music in videos can either be diegetic—played by someone in the
+        scene—or non-diegetic, added during post-production to enhance the
+        storytelling.
+    </p>
+    
+    <p>
+        With infinite video-audio data, a model could learn to separate factors that
+        influence audio, such as object type (bulldog vs. chihuahua), speed (fast vs.
+        slow impact), or material, from those that don’t, like color. However, 
+        learning these from limited data is challenging.
+    </p>
+    <p>
+        This is where <strong>text captions</strong> help. They act as a guide
+        to help with the learning video-to-audio with text. The model is able to
+        map video to important text concepts and perform better. Extensive
+        dropout allows the model to learn the mapping of
+        video-to-concept-to-audio without over-relying on text. This also allows
+        for controllability, enabling the generation of plausible audio, such as
+        the sound of a bird in a forest, even when the bird is not visible.
+    </p>
+    <p>
+        Another challenge is that current audio-to-text caption models lag
+        behind highly detailed video captioning models. For example, it's
+        difficult to distinguish between hitting a ball with a metal bat versus
+        a wooden one or the difference in sound between walking in high heels on
+        concrete versus sand.  Understanding these material properties from
+        audio alone remains a significant challenge. Highly detailed captioning models could
+        have a big impact on the generative space in the future.
+    </p>
+
+    <p>Additionally, evaluating the performance of V2A is complex due to the
+    subjective nature of sound quality and synchronization. Long-form
+    evaluations pose their own set of challenges, as consistency and relevance
+    must be maintained throughout extended video durations.</p>
+
+    
+    <h3>Movie Gen Dataset</h3>
+
+    <p> We focus on generating sound effects, and 
+    and instrumental music for a visual scene. We do not speech as it can be
+    handled by text-to-speech systems for documentary like scenes while lip
+    synchronized speech generation would require additional text transcripts and
+    is left to future work.
+    We classify audio into following two axes:
+    </p>
+    <ul>
+        <li><p><strong>Audio Type: </strong>An audio can be divided into
+        voice (speech and singing), non-vocal music, and general sound. An audio
+        event detection (AED) model is used for automatic classification. Each sample may contain multiple types of audio. </p>
+        <li>
+        <p><strong>Diegetic/Non-Diegetic: </strong> Diegetic audio has a direct relation to the video scene. These refer
+        to the sounds that can be heard at the scene. They may correspond to
+        on-screen (crowd talking, a live band performing) or off-screen (birds
+        chirping in the forest even if birds are not seen) sounds.  </p>
+
+        <p>Non-diegetic audios require semantic reasoning capabilities, for
+        instance narrations indocumentaries, background music in movies, or
+        canned laughter in sitcoms. </p>
+
+        <p>A professionally-produced movie video typically contain both diegetic
+        and non-diegetic sounds. We leverage a contrastive audio-video-text
+        pre-training model (CAVTP) to determine how likely an audio sample is diegetic
+        given the corresponding video. Because this model is trained on data
+        that contain mostly diegetic sounds, the audio and the video have higher
+        cosine similarity for diegetic audio matching the video content.</p>
+        </li>
+    </ul>
+
+
+
+  <p><strong>Filters: </strong> We use AED model with 527 tags to get event
+  probabilities. We then drop audios with silence as dominant and using Audioset
+  ontology map audio to the above audio types. We then use the CAVTP model to
+  get audio-video cosine similarities to select and group the audio-video
+  pairs.</p>
+
+  <div class="image-container">
+    <img src="assets/pngs/pt_filt.png" alt="Pretrain-Filter" class="responsive-image">
+</div>
+<!-- Pre-training Data -->
+
+<p><strong>Pre-training Data Scale:</strong></p>
+
+<div class="image-container">
+    <img src="assets/pngs/pt_data.png" alt="Pretrain-Data" class="responsive-image">
+</div>
+
+<p><strong>Fine-tuning Data Scale:</strong></p>
+<div class="image-container">
+    <img src="assets/pngs/ft_data.png" alt="Finetune-Data" class="responsive-image">
+</div>
+
+    <h3>Model Architecture</h3>
+
+    <p>
+    The Movie Gen audio model is flow-matching model that solves a masked
+    infilling task conditioned on noised-latents, video features, audio context,
+    and text features. Below, we present the architecture, and details of the conditioning inputs.
+    </p>
+
+<div class="image-container">
+    <img src="assets/pngs/model.png" alt="Model-arch" class="responsive-image">
+</div>
+
+    <ul>
+    <li><p><strong>DAC-VAE Latent Feature Encoder: </strong> We use DAC-VAE model to
+    map a mono audio recorded at 48KHz to latent feature representation at lower frame rate 25Hz with 128 channels. 
+    We remove the quantization layers and use continuous features
+    for latent diffusion model.</p>
+    </li>
+
+    <li>
+        <p>
+        <strong>Video Features: </strong> We use Long-prompt MetaCLIP to extract each frame in a video. Since the frame rate of the video might not match that of the audio, we
+        take the nearest visual frame for each audio frame. This gives us video
+        features aligned to the audio features at 25Hz. 
+        </p>
+    </li>
+
+    <li>
+        <p>
+        <strong>Audio Context: </strong> 
+        To enable infilling, and audio extension for long-form generation, we
+        condition on partially masked target audio, referred to as audio
+        context. 
+        Audio context is constructed using the extracted DAC-VAE features and 
+        masking the target frames with zero-vectors.
+        </p>
+    </li>
+
+    <li>
+        <p>
+        <strong>Text: </strong>
+        We use the captions extracted from audio to provide guidance on target
+        audio quality, sound events, and music style if music is present. 
+        We use T5-base model to extract 768-dimensional features.
+        We insert a cross-attention layer at each DiT layer to provide text
+        conditioning. The details of the audio-caption can be found in Section
+        6.2.4.
+        </p>
+    </li>
+
+    </ul>
+
+    <h3> Model Inference</h3>
+
+
+    <p>
+        The model is trained with independent dropout for each conditioning
+        input (video, audio context, text). This enables the model to perform
+        (1) video-to-audio (V2A), (2) text-instructed V2A (TV2A) (3)
+        video-to-audio infilling or extension, and (4) text-instructed
+        video-to-audio infilling or extension, by simply changing the
+        conditioned inputs.
+    </p>
+
+    <p>
+        We can run inference either in one-shot manner for short videos or chunk
+        the video and use audio extension for long-form generation for several
+        minute long videos.
+    </p>
+
+    <h4> Single Shot generation</h4>
+    <p> 
+        Given the conditioning inputs, the model generates audio for the entire
+        video in one shot. We use a midpoint solver with 64 steps, classifier
+        free guidance with a weight of 3.0, and conduct re-ranking with 8
+        samples. 
+    </p>
+
+    <h4> Audio Extension</h4>
+<p>
+    Inspired by previous work, we explore multi-diffusion for audio extension.
+    In essence, multi-diffusion solves the ODE for each time step (e.g., from
+    t<sub>i</sub> to t<sub>i+1</sub>) in parallel across all segments,
+    consolidates the predictions using latent blending, and then proceeds to the
+    next ODE step.
+</p>
+
+
+
+    <h3> Evaluation:</h3>
+    <p>
+        We evaluate soundtrack generation mainly on audio quality, audio-video
+        alignment, and audio-text alignment.  We prioritize alignment to video
+        over alignment to text, because text may not capture all the details in
+        the video.
+        
+        Below we show the objective and subjective evaluation metrics. Note that, 
+        for closely performing models, we find that the objective metrics do not
+        always correlate with the subjective evaluation.
+    </p>
+    <!-- Evaluation Metrics Table -->
+
+<div class="image-container">
+    <img src="assets/pngs/eval_metrics.png" alt="Evaluation-Metrics" class="responsive-image">
+</div>
+
+    <h3>Main Results</h3>
+    <p>
+    For sound effects, Movie Gen Audio outperforms all baselines on all metrics by a large margin
+    on correctness and overall quality for all videos. Compared to the
+    commercial baselines, Movie Gen Audio wins even more on generated videos,
+    demonstrating its robustness. In terms of audio quality, we highlight that
+    Movie Gen Audio wins more on professionalness than on naturalness,
+    indicating that Movie Gen Audio learns to not only generate realistic sounds
+    but also professionally produced sounds, which leads to higher overall
+    quality.
+    </p>
+    <div class="image-container">
+        <img src="assets/pngs/main_1.png" alt="SFX main results" class="responsive-image">
+    </div>
+
+
+    <p>
+    Similarly for joint sound effects and music generation, we outperform all baselines significantly across
+    all aspects of alignment and quality. Notably, the margin by which we surpass the joint generation baseline
+    Seeing & Hearing TV2A is even larger than in the sound effect-only case. Separately generating sound effects and music
+    with S&H improves from joint generation, but it stills falls behind Movie Gen Audio
+    </p>
+
+    <div class="image-container">
+        <img src="assets/pngs/main_2.png" alt="SFX+Music main results" class="responsive-image">
+    </div>
+
+    <h3>Ablations</h3>
+
+    <h4> Data Scaling</h4>
+    <p>
+    Finetuning significantly enhances both audio quality and video alignment. 
+    Qualitatively, the generated videos exhibit a much more cinematic feel after
+    fine-tuning, which highlights the importance of high-quality data.
+    </p>
+
+    <div class="image-container">
+        <img src="assets/pngs/pt_vs_ft.png" alt="Pre-training vs Fine-tuning Performance Comparison" class="responsive-image">
+    </div>
+
+    <h4>Model Scaling</h4>
+    <p>
+    We study the benefit of scaling and compares models of four different sizes:
+    300M, 3B, 9B, and 13B parameters. The 300M model adopts the same
+    architecture and configuration as Audiobox, while the remaining ones use the
+    DiT architecture. Performance generally improves across all metrics as the
+    model scales up. 
+    </p>
+
+    <div class="image-container">
+        <img src="assets/pngs/scaling.png" alt="Pre-training vs Fine-tuning Performance Comparison" class="responsive-image">
+    </div>
+
+
+    <h4>Audio Extension</h4>
+    <p>
+    We find that audio extension generates coherent long form generations and
+    significantly outperfoms external baseline and our own stitching baseline.
+    In particular, stitching independently generated audio leads to abrupt
+    transition and incoherent music.
+    </p>
+
+    <div class="image-container">
+        <img src="assets/pngs/extn.png" alt="Pre-training vs Fine-tuning Performance Comparison" class="responsive-image">
+    </div>
+
+
+ 
+    <h3>Areas of Research & Improvement</h3>
+    <ul>
+        <li> 
+            <p> Generated audio is sometimes out of synchronization when motions are dense (e.g., tap
+dance), visually small or occluded (e.g., footsteps), or when it requires finer-grained visual understanding
+(e.g., recognizing the guitar chords).  Reliable benchmarking of media generation models is important for identifying such shortcomings and for future research. </p>
+        </li>
+        <li> <p> Developing reliable automatic evaluation metrics for audio-visual
+        synchronization is still largely unresolved. Human evaluations can be
+        impacted by a number of factors including personal biases, backgrounds etc </p>
+    </li>
+    <li> <p> While the models can generate long-form music with audio extention,
+        generating complex music structures over longer duration could be
+        improved with longer context training. </p>
+        </li>
+        <li> <p> Audio captioning could be improved to provide richer text
+          guidance with detailed descriptions. </p>
+        </li>
+    </ul>
+</section>

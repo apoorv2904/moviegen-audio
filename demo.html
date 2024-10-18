@@ -1,0 +1,119 @@
+<!-- demo.html -->
+<section id="demo">
+
+    <h2>What Can the Movie Gen Audio Model Do?</h2>
+    <p>
+        The Movie Gen Audio model offers the following capabilities:
+    </p>
+    <ul>
+        <li><strong>Better Synchronization:</strong> Achieves far better synchronization than any existing video-to-SFX models.</li>
+        <li><strong>Music:</strong> Composes music based on videos, taking sentiments into account to enhance emotional impact.</li>
+        <li><strong>SFX and Music:</strong> Generates sound effects (SFX) and music jointly, blending them harmoniously like a professional studio.</li>
+        <li><strong>Non-Diegetic Sound Effects:</strong> Injects non-diegetic sound effects, such as "whoosh" sounds when changing scenes, to elevate the cinematic experience.</li>
+        <li><strong>Audio Infilling:</strong> Allows targeted modifications given the audio-video context to support edits without disrupting the overall soundtrack.</li>
+        <li><strong>Longform Soundtrack:</strong> Creates soundtracks that are longer than two minutes, suitable for short films and extended video content.</li>
+    </ul>
+
+    <p>Below we show the videos highlighting the capabilities of Movie Gen Audio model.</p>
+
+    <h4>Sound Effects + Music Generation</h4>
+    <div class="video-row">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/LTt7_7OdUTc?si=IzaI_IFpwjgkXGlA" 
+                    title="Demo Video 1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+            <p class="video-description"> 
+                SFX highlights the acceleration sounds leading to the jump. Music builds up and enters the next verse exactly when the ATV lands.
+                </p>
+        </div>
+        <div class="video-item">
+            <iframe
+                    src="https://www.youtube.com/embed/TklI1wapJp0?si=24AbMNVxCZRR_CyY"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+            </iframe>
+            <p class="video-description"> 
+                Waterfall sounds decreases gradually as camera pans right and shifts focus to the man.
+                Music fades out synchronously starting at the 8s mark.
+            </p>
+        </div>
+    </div>
+
+    <h4>Sound Effects Generation</h4>
+    <div class="video-row">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/NsJ519UJOcQ?si=KCb66LL7eL-u_Ivs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">The sounds of geese can be heard in the scene. At 7s mark synchronized sound of wing flapping is heard.</p>
+        </div>
+
+        <div class="video-item">
+            <iframe 
+            src="https://www.youtube.com/embed/6UEbH3sT8uQ?si=Ofce4gKZxx4P3HzA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">
+                The sounds of water splashing can be heard from 5-7s. This is followed by sounds of swimming. In the background, sound of bird chirping is heard.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Subtitle for Next Set of Videos -->
+    <h4>Longform Generation</h4>
+    <!-- Second Row: 2 Videos -->
+    <div class="video-row">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/VxmoDwAaIoM?si=wGpMlYviTMIEEydz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">Airhead Video by Sora (57s) <br>
+            </p>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/hp2YnO2YVbw?si=J1WnNggJKy5CJuBM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">Sora Video (2m 9s)</p>
+        </div>
+    </div>
+    <p>
+        In the Airhead video, the Moviegen Audio model generates non-diegetic sound effects at the opening and closing scenes (0:01, 0:53, and 0:56). Music enters when Airhead starts walking at 0:09, with its intensity increasing at 0:21 as the balloon begins to float around the world. The music gracefully fades out during the final scene at 0:42. Additionally, the video incorporates various visual-aligned ambient sounds, including urban noises, wind, eagles, birds, ocean waves, racing cars, skateboards, and crowd cheering and clapping, enhancing the overall auditory experience.
+        The second video also generates well aligned sound effects and music to the visual scenes.
+    </p>
+
+    <h4>SFX-Text controllability</h4>
+
+    <div class="video-row video-row-3"> 
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/l2FFhQ71RJs?si=8Uje7l-kekClB1OV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">footsteps crunching on leaves.
+            </p>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/pDxAj8xyi0s?si=eK0eKwm4B1npTf9p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">an owl hooting in the distance.</p>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/dAiY-wG3YEA?si=_WJ18XfUm6hIz-wk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">insects buzzing near the ground.</p>
+        </div>
+    </div>
+
+
+    <h4>Music-Text controllability (Music+SFX)</h4>
+    <div class="video-row video-row-3"> 
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/XIhUW0jg2T0?si=w6zmT16w5Y2kUyC9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description">  A beautiful and emotional classical orchestral track with a cinematic feel.
+            </p>
+        </div>
+        <div class="video-item">
+            <iframe  src="https://www.youtube.com/embed/fZ6fNCvKuS4?si=g8aDZ1hFsklW6w5W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description"> A dark and mysterious electronic track with a haunting melody.
+            </p>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/czqf7xKtff0?si=Qs2ebAayF72wVCHi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <p class="video-description"> A slow, emotional, and passionate country song.
+            </p>
+        </div>
+    </div>
+</section>

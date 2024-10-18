@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieGen Audio Blog</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo"><h1>Movie Gen Audio Blog</h1></a>
+    
+            <div class="toggle" aria-label="Toggle navigation menu">&#9776;</div>
+            <ul class="nav-links">
+                <li><a href="https://ai.meta.com/static-resource/movie-gen-research-paper">Paper</a></li>
+                <li><a href="https://www.youtube.com/playlist?list=PL86eLlsPNfyi27GSizYjinpYxp7gEl5K8">Videos</a></li>
+                <li><a href="https://ai.meta.com/blog/movie-gen-media-foundation-models-generative-ai-video/">MovieGen Blog</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="content" class="container">
+        <article class="blog-post">
+            <div id="intro-placeholder">
+                <!-- Intro content will be loaded here -->
+            </div>
+
+            <div id="demo-placeholder">
+                <!-- DEMO content will be loaded here -->
+            </div>
+
+            <div id="model-placeholder">
+                <!-- Technical details section will be loaded here -->
+            </div>
+            
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu Toggle and Tabs -->
+    <script>
+        // Mobile Menu Toggle
+        const toggle = document.querySelector('.toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Tabs Functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to the clicked button
+                button.classList.add('active');
+
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('active'));
+                // Show the corresponding tab content
+                const tab = document.getElementById(button.dataset.tab);
+                tab.classList.add('active');
+            });
+        });
+
+        <!-- Existing JavaScript in index.html -->
+    // Function to Load External HTML into Placeholder
+    function loadSection(sectionId, filePath) {
+        fetch(filePath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(sectionId).innerHTML = data;
+                initializeTabs(); // Initialize any dynamic features within the loaded section
+            })
+            .catch(error => {
+                console.error(`Error fetching ${filePath}:`, error);
+                document.getElementById(sectionId).innerHTML = `<p>Failed to load section. Please try again later.</p>`;
+            });
+    }
+
+    // Initialize Tabs (if applicable)
+    function initializeTabs() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to the clicked button
+                button.classList.add('active');
+
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('active'));
+                // Show the corresponding tab content
+                const tab = document.getElementById(button.dataset.tab);
+                tab.classList.add('active');
+            });
+        });
+    }
+
+    // Load Sections Once the DOM is Fully Loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSection('demo-placeholder', 'demo.html');
+        loadSection('intro-placeholder', 'introduction.html');
+        loadSection('model-placeholder', 'model.html');
+    });
+
+    </script>
+
+</body>
+</html>
